@@ -13,6 +13,6 @@ output will be :
 
 ## TODO
 - [ ] add support for other currencies not only PLN 🇵🇱 
-- [ ] error handling
+- [x] error handling
 - [ ] saving favorite currencies
 - [ ] displaying many currencies at once
