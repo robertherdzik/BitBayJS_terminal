@@ -62,3 +62,4 @@ sentRequest(url, (success, currencyObj) => {
 		console.log("💥 REQ ERROR");
 	}
 })
+
