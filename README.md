@@ -8,7 +8,7 @@ where argument is crypto currency which rate you are interested in.
 
 output will be :
 <p align="center">
-<img src =".readmeExample.jpg" width="360" height="250"/>
+<img src ="./readmeExample.jpg" width="200" height="80"/>
 </p>
 
 ## TODO
