@@ -1,9 +1,27 @@
+
 var args = process.argv
-var currency = args[2]
+var currencyNameArg = args[2]
 
 const https = require('https');
  
-var url = 'https://bitbay.net/API/Public/'+currency+'PLN/orderbook.json'
+var url = 'https://bitbay.net/API/Public/'+currencyNameArg+'PLN/orderbook.json'
+
+class Currency {
+
+	constructor(name, rate) {
+	    this.name = name;
+	    this.rate = rate;
+  	}
+}
+
+function parseResponse(jsonResponse) {
+	var rate = jsonResponse.bids[0][0];
+	if (rate) {
+		return new Currency(currencyNameArg, rate);
+	}
+
+	return null;
+}
 
 var sentRequest = (url ,callback) => {
 	https.get(url, (resp) => {
@@ -12,14 +30,14 @@ var sentRequest = (url ,callback) => {
 	  resp.on('data', (chunk) => {
 	    data += chunk;
 	  });
-	  
+	   
 	  resp.on('end', () => {
-	  	var parsedObject = JSON.parse(data)
-	    return callback(parsedObject)
+	  	var currencyObj = parseResponse(JSON.parse(data))
+	    callback(true, currencyObj);
 	  });
 	 
 	}).on("error", (err) => {
-	  console.log("Error: " + err.message);
+		callback(false, null);
 	});
 }
 
@@ -27,17 +45,20 @@ var printTable = (currencyName, currencyRate) => {
 	var Table = require('cli-table');
 	var table = new Table();
 
-	var currencyValTextRepresentation = currency + " ➡ PLN "
+	var currencyValTextRepresentation = currencyName + " ➡ PLN ";
 
 	table.push(
 	    { 'Currency': currencyValTextRepresentation }
-	  , { '🤑 RATE': currencyRate }
+	  , { '🤑 RATE': String(currencyRate) }
 	);
 
 	console.log(table.toString());	
 }
 
-sentRequest(url, (myObject) => {
-	var currencyValue = myObject.bids[0][0]
-	printTable(currency, currencyValue)
+sentRequest(url, (success, currencyObj) => {
+	if (success && currencyObj != null) {
+		printTable(currencyObj.name, currencyObj.rate);
+	} else {
+		console.log("💥 REQ ERROR");
+	}
 })
