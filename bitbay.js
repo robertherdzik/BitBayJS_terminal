@@ -23,6 +23,28 @@ function parseResponse(jsonResponse) {
 	return null;
 }
 
+var prepareCurrencyRow = (currencyName) => {
+	var currencyValTextRepresentation = currencyName + " ➡ PLN ";
+
+	return {'Currency': currencyValTextRepresentation}
+}
+
+var prepareRateRow = (currencyRate) => {
+	return { '🤑 RATE': String(currencyRate) }
+}
+
+var printTable = (currencyName, currencyRate) => {
+	var Table = require('cli-table');
+	var table = new Table();
+
+	table.push(
+	    prepareCurrencyRow(currencyName)
+	  , prepareRateRow(currencyRate)
+	);
+
+	console.log(table.toString());	
+}
+
 var sentRequest = (url ,callback) => {
 	https.get(url, (resp) => {
 	  let data = '';
@@ -39,20 +61,6 @@ var sentRequest = (url ,callback) => {
 	}).on("error", (err) => {
 		callback(false, null);
 	});
-}
-
-var printTable = (currencyName, currencyRate) => {
-	var Table = require('cli-table');
-	var table = new Table();
-
-	var currencyValTextRepresentation = currencyName + " ➡ PLN ";
-
-	table.push(
-	    { 'Currency': currencyValTextRepresentation }
-	  , { '🤑 RATE': String(currencyRate) }
-	);
-
-	console.log(table.toString());	
 }
 
 sentRequest(url, (success, currencyObj) => {
