@@ -15,4 +15,6 @@ output will be :
 - [ ] add support for other currencies not only PLN 🇵🇱 
 - [x] error handling
 - [ ] saving favorite currencies
-- [ ] displaying many currencies at once
+- [x] displaying many currencies at once
+- [ ] split script to smaller files
+- [ ] fix 'undefined' names of currencies in the generated table
