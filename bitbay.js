@@ -2,9 +2,10 @@
 var args = process.argv
 var currencyNameArg = args[2]
 
+// List of my personal cryptocurrencies 😎
+var myFavoriteCurrencies = ['LSK', 'EHT', 'BTC']
+
 const https = require('https');
- 
-var url = 'https://bitbay.net/API/Public/'+currencyNameArg+'PLN/orderbook.json'
 
 class Currency {
 
@@ -23,13 +24,13 @@ function parseResponse(jsonResponse) {
 	return null;
 }
 
-var prepareCurrencyRow = (currencyName) => {
+var prepareCurrencyTableRow = (currencyName) => {
 	var currencyValTextRepresentation = currencyName + " ➡ PLN ";
 
 	return {'Currency': currencyValTextRepresentation}
 }
 
-var prepareRateRow = (currencyRate) => {
+var prepareRateTableRow = (currencyRate) => {
 	return { '🤑 RATE': String(currencyRate) }
 }
 
@@ -38,8 +39,8 @@ var printTable = (currencyName, currencyRate) => {
 	var table = new Table();
 
 	table.push(
-	    prepareCurrencyRow(currencyName)
-	  , prepareRateRow(currencyRate)
+	    prepareCurrencyTableRow(currencyName),
+	  	prepareRateTableRow(currencyRate)
 	);
 
 	console.log(table.toString());	
@@ -63,11 +64,42 @@ var sentRequest = (url ,callback) => {
 	});
 }
 
-sentRequest(url, (success, currencyObj) => {
-	if (success && currencyObj != null) {
-		printTable(currencyObj.name, currencyObj.rate);
-	} else {
-		console.log("💥 REQ ERROR");
-	}
-})
+var getRequestParameters = () => {
+	var currencyNames;
 
+	if (currencyNameArg == null ) {
+		 currencyNames = myFavoriteCurrencies;
+	} else {
+		currencyNames = [currencyNameArg];
+	}
+
+	return currencyNames;
+}
+
+var parameters = getRequestParameters();
+var recursiveItemIndex = 0;
+// Recurence function which contains serial request to the 'bitbay' API
+var showResults = (requestParameter) => {
+	while (recursiveItemIndex < parameters.length) {
+		setTimeout(() => {
+     		
+			var url = 'https://bitbay.net/API/Public/'+requestParameter+'PLN/orderbook.json';
+			sentRequest(url, (success, currencyObj) => {
+				if (success && currencyObj != null) {
+					printTable(currencyObj.name, currencyObj.rate);
+				} else {
+					console.log("💥 REQ ERROR");
+				}
+			})	
+
+			showResults(parameters[recursiveItemIndex])
+		}, 100);
+
+		recursiveItemIndex++;
+	}
+}
+
+// ------------------------------------------------
+// Run script 
+// ------------------------------------------------
+showResults(parameters[0])
