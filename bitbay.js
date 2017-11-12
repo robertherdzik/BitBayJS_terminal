@@ -3,7 +3,7 @@ var args = process.argv
 var currencyNameArg = args[2]
 
 // List of my personal cryptocurrencies 😎
-var myFavoriteCurrencies = ['LSK', 'EHT', 'BTC']
+var myFavoriteCurrencies = ['LSK', 'ETH', 'BTC']
 
 const https = require('https');
 
@@ -80,22 +80,21 @@ var parameters = getRequestParameters();
 var recursiveItemIndex = 0;
 // Recurence function which contains serial request to the 'bitbay' API
 var showResults = (requestParameter) => {
-	while (recursiveItemIndex < parameters.length) {
+	if (recursiveItemIndex < parameters.length) {
 		setTimeout(() => {
-     		
 			var url = 'https://bitbay.net/API/Public/'+requestParameter+'PLN/orderbook.json';
+			
 			sentRequest(url, (success, currencyObj) => {
 				if (success && currencyObj != null) {
 					printTable(currencyObj.name, currencyObj.rate);
 				} else {
 					console.log("💥 REQ ERROR");
 				}
+
+				recursiveItemIndex++;
+				showResults(parameters[recursiveItemIndex]);
 			})	
-
-			showResults(parameters[recursiveItemIndex])
 		}, 100);
-
-		recursiveItemIndex++;
 	}
 }
 
