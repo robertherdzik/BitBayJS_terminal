@@ -17,4 +17,4 @@ output will be :
 - [ ] saving favorite currencies
 - [x] displaying many currencies at once
 - [ ] split script to smaller files
-- [ ] fix 'undefined' names of currencies in the generated table
+- [x] fix 'undefined' names of currencies in the generated table
