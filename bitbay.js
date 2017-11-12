@@ -15,10 +15,10 @@ class Currency {
   	}
 }
 
-function parseResponse(jsonResponse) {
+function parseResponse(currencyName, jsonResponse) {
 	var rate = jsonResponse.bids[0][0];
 	if (rate) {
-		return new Currency(currencyNameArg, rate);
+		return new Currency(currencyName, rate);
 	}
 
 	return null;
@@ -46,7 +46,9 @@ var printTable = (currencyName, currencyRate) => {
 	console.log(table.toString());	
 }
 
-var sentRequest = (url ,callback) => {
+var sentRequest = (requestParameter ,callback) => {
+	var url = 'https://bitbay.net/API/Public/'+requestParameter+'PLN/orderbook.json';
+
 	https.get(url, (resp) => {
 	  let data = '';
 	 
@@ -55,7 +57,7 @@ var sentRequest = (url ,callback) => {
 	  });
 	   
 	  resp.on('end', () => {
-	  	var currencyObj = parseResponse(JSON.parse(data))
+	  	var currencyObj = parseResponse(requestParameter, JSON.parse(data))
 	    callback(true, currencyObj);
 	  });
 	 
@@ -78,23 +80,22 @@ var getRequestParameters = () => {
 
 var parameters = getRequestParameters();
 var recursiveItemIndex = 0;
-// Recurence function which contains serial request to the 'bitbay' API
+// Recurrence function (invoking with delay) which contains serial request to the 'bitbay' API
 var showResults = (requestParameter) => {
-	if (recursiveItemIndex < parameters.length) {
-		setTimeout(() => {
-			var url = 'https://bitbay.net/API/Public/'+requestParameter+'PLN/orderbook.json';
-			
-			sentRequest(url, (success, currencyObj) => {
-				if (success && currencyObj != null) {
-					printTable(currencyObj.name, currencyObj.rate);
-				} else {
-					console.log("💥 REQ ERROR");
-				}
 
+	if (recursiveItemIndex < parameters.length) {
+		sentRequest(requestParameter, (success, currencyObj) => {
+			if (success && currencyObj != null) {
+				printTable(currencyObj.name, currencyObj.rate);
+			} else {
+				console.log("💥 REQ ERROR");
+			}
+			
+			setTimeout(() => {
 				recursiveItemIndex++;
 				showResults(parameters[recursiveItemIndex]);
-			})	
-		}, 100);
+			}, 300);
+		})	
 	}
 }
 
