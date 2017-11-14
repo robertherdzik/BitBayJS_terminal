@@ -18,3 +18,4 @@ output will be :
 - [x] displaying many currencies at once
 - [ ] split script to smaller files
 - [x] fix 'undefined' names of currencies in the generated table
+- [ ] add today's currency trend (maybe use [tcharts.js](https://github.com/ProtoTeam/tcharts.js))
